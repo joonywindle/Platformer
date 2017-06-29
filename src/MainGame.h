@@ -17,11 +17,13 @@
 #include "SpriteBatch.h"
 #include "InputManager.h"
 #include "Bullet.h"
+#include "Level.h"
 enum class GameState {PLAY, EXIT};
 class MainGame
 {
 public:
 	MainGame();
+	~MainGame();
 	void run();
 private:
 	void gameLoop();
@@ -41,6 +43,8 @@ private:
 	SpriteBatch sb;
 	InputManager inputManager;
 	std::vector<Bullet> bullets;
+	std::vector<Level*> levels;
+	int currentLevel;
 };
 
 #endif // MAINGAME_H

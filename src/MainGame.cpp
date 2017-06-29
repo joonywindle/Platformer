@@ -5,14 +5,23 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "ResourceManager.h"
 
-MainGame::MainGame() : time(0),state(GameState::PLAY), maxFPS(60)
+MainGame::MainGame() : time(0),state(GameState::PLAY), maxFPS(60), currentLevel(0)
 {
 
+}
+
+MainGame::~MainGame()
+{
+	for (size_t i = 0; i < levels.size(); i++)
+	{
+		delete levels[i];
+	}
 }
 
 void MainGame::run()
 {
 	initShaders();
+	levels.push_back(new Level("../Levels/level1.txt"));
 	sb.init();
 	camera.init(WindowManager::WIDTH,WindowManager::HEIGHT);
 	gameLoop();
@@ -109,31 +118,31 @@ void MainGame::drawGame()
 	colorProg.use();
 
 	glActiveTexture(GL_TEXTURE0);
-	GLint timeLocation  = colorProg.getUniformLocation("time");
-	glUniform1f(timeLocation,time);
 	GLint textureLocation = colorProg.getUniformLocation("aSampler");
 	glUniform1i(textureLocation,0);
 	GLint pLocation = colorProg.getUniformLocation("P");
 	glm::mat4 cameraMatrix = camera.getCamMatrix();
 	glUniformMatrix4fv(pLocation,1,GL_FALSE,&cameraMatrix[0][0]);
 
-	sb.begin();
-	static Texture text = ResourceManager::getTexture("../PNGs/GrassLand_Tree.png");
-	Color color;
-	color.r = 255;
-	color.g = 255;
-	color.b = 255;
-	color.alpha = 255;
-	//sb.draw(glm::vec4(WIDTH/2,HEIGHT/2,200,200),glm::vec4(0,0,1,1),text.id,0,color);
-	sb.draw(glm::vec4(0,0,100,100),glm::vec4(0,0,1,1),text.id,0,color);
-	//sb.draw(glm::vec4(1000,1000,1000,1000),glm::vec4(0,0,1,1),text.id,0,color);
-	for(int i = 0; i < bullets.size();i++)
-	{
-		bullets[i].draw(sb);
-	}
+	// sb.begin();
+	// static Texture text = ResourceManager::getTexture("../PNGs/GrassLand_Tree.png");
+	// Color color;
+	// color.r = 255;
+	// color.g = 255;
+	// color.b = 255;
+	// color.alpha = 255;
+	// //sb.draw(glm::vec4(WIDTH/2,HEIGHT/2,200,200),glm::vec4(0,0,1,1),text.id,0,color);
+	// sb.draw(glm::vec4(0,0,100,100),glm::vec4(0,0,1,1),text.id,0,color);
+	// sb.draw(glm::vec4(1000,1000,1000,1000),glm::vec4(0,0,1,1),text.id,0,color);
+	// for(int i = 0; i < bullets.size();i++)
+	// {
+	// 	bullets[i].draw(sb);
+	// }
+	//
+	// sb.end();
+	// sb.renderBatch();
 
-	sb.end();
-	sb.renderBatch();
+	levels[currentLevel]->draw();
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -145,7 +154,7 @@ void MainGame::drawGame()
 
 void MainGame::initShaders()
 {
-	colorProg.compileShaders("../Shaders/ColorShader.vert", "../Shaders/ColorShader.frag");
+	colorProg.compileShaders("../Shaders/TextureShader.vert", "../Shaders/TextureShader.frag");
 	colorProg.addAttribute("vertexPosition");
 	colorProg.addAttribute("vertexColor");
 	colorProg.addAttribute("vertexUV");
