@@ -5,7 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "ResourceManager.h"
 
-MainGame::MainGame() : time(0),state(GameState::PLAY), maxFPS(60), currentLevel(0)
+MainGame::MainGame() : time(0),state(GameState::PLAY), maxFPS(60), currentLevel(0), user(nullptr)
 {
 
 }
@@ -16,13 +16,16 @@ MainGame::~MainGame()
 	{
 		delete levels[i];
 	}
+	for (size_t i = 0; i < players.size(); i++) {
+		delete players[i];
+	}
 }
 
 void MainGame::run()
 {
 	initShaders();
-	levels.push_back(new Level("../Levels/level1.txt"));
-	sb.init();
+	initLevel();
+	playersBatch.init();
 	camera.init(WindowManager::WIDTH,WindowManager::HEIGHT);
 	gameLoop();
 }
@@ -44,6 +47,8 @@ void MainGame::gameLoop()
 		drawGame();
 		time += 0.1;
 		processInput();
+		updatePlayers();
+		camera.setPosition(user->getPosition());
 		camera.update();
 		calculateFPS();
 		static int frameCount = 0;
@@ -144,6 +149,14 @@ void MainGame::drawGame()
 
 	levels[currentLevel]->draw();
 
+	playersBatch.begin();
+	for(int i = 0; i < players.size(); i++)
+	{
+		players[i]->draw(playersBatch);
+	}
+	playersBatch.end();
+	playersBatch.renderBatch();
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 
@@ -192,4 +205,20 @@ void MainGame::calculateFPS()
 		fps = 1000.0f / frameTimeAverage;
 	else
 		fps = 60.0f;
+}
+
+void MainGame::initLevel()
+{
+	levels.push_back(new Level("../Levels/level1.txt"));
+	user = new User();
+	user->init(5.0f, levels[currentLevel]->getStartPos());
+	players.push_back(user);
+}
+
+void MainGame::updatePlayers()
+{
+	for(int i = 0; i < players.size(); i++)
+	{
+		players[i]->update(levels[currentLevel]->getLevelData());
+	}
 }

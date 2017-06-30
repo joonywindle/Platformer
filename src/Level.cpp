@@ -2,6 +2,7 @@
 #include "ResourceManager.h"
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 Level::Level(const std::string filename)
 {
@@ -20,6 +21,10 @@ Level::Level(const std::string filename)
     levelData.push_back(line);
     lineNums++;
   }
+  
+  for(int i = 0; i < levelData.size(); i++)
+    std::cout << levelData[i];
+  std::reverse(levelData.begin(), levelData.end());
   levelBatch.init();
   levelBatch.begin();
   glm::vec4 uvRect(0,0,1,1);
@@ -43,13 +48,27 @@ Level::Level(const std::string filename)
           levelBatch.draw(destRect,uvRect,ResourceManager::getTexture("../PNGs/tileGreen_16.png").id,0.0f,color);
           break;
         case 'T':
-          levelBatch.draw(destRect,uvRect,ResourceManager::getTexture("../PNGs/GrassLand_Tree.png").id,0.0f,color);
+          levelBatch.draw(destRect,uvRect,ResourceManager::getTexture("../PNGs/plantRed_6.png").id,0.0f,color);
           break;
         case 'S':
+          levelBatch.draw(destRect,uvRect,ResourceManager::getTexture("../PNGs/signLarge.png").id,0.0f,color);
+          break;
+        case 'V':
+          levelBatch.draw(destRect,uvRect,ResourceManager::getTexture("../PNGs/plantThorns_vertical.png").id,0.0f,color);
+          break;
+        case 'B':
+          levelBatch.draw(destRect,uvRect,ResourceManager::getTexture("../PNGs/ladderWide_mid.png").id,0.0f,color);
+          break;
+        case 'W':
+          levelBatch.draw(destRect,uvRect,ResourceManager::getTexture("../PNGs/switchRed_right.png").id,0.0f,color);
+          break;
+        case '@':
+          levelData[i][j] = '.';
           startPos.x = j * TILE_WIDTH;
           startPos.y = i * TILE_WIDTH;
           break;
         case 'E':
+          levelData[i][j] = '.';
           enemyStarts.emplace_back(j * TILE_WIDTH, i * TILE_WIDTH);
           break;
         default:

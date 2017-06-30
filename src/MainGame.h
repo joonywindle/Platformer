@@ -18,6 +18,8 @@
 #include "InputManager.h"
 #include "Bullet.h"
 #include "Level.h"
+#include "Player.h"
+#include "User.h"
 enum class GameState {PLAY, EXIT};
 class MainGame
 {
@@ -28,11 +30,12 @@ public:
 private:
 	void gameLoop();
 	void initShaders();
-
+	void initLevel();
 	void calculateFPS();
 
 	void processInput();
 	void drawGame();
+	void updatePlayers();
 	GameState state;
 	GLSLProg colorProg;
 	float time;
@@ -40,11 +43,13 @@ private:
 	float maxFPS;
 	float deltaTime;
 	Camera2D camera;
-	SpriteBatch sb;
+	SpriteBatch playersBatch;
 	InputManager inputManager;
 	std::vector<Bullet> bullets;
 	std::vector<Level*> levels;
 	int currentLevel;
+	User* user;
+	std::vector<Player*> players;
 };
 
 #endif // MAINGAME_H

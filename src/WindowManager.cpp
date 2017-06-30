@@ -2,8 +2,8 @@
 #include "InputManager.h"
 #include <iostream>
 GLFWwindow* WindowManager::window = nullptr;
-const GLuint WindowManager::WIDTH = 800;
-const GLuint WindowManager::HEIGHT = 500;
+const GLuint WindowManager::WIDTH = 1200;
+const GLuint WindowManager::HEIGHT = 700;
 
 WindowManager::WindowManager()
 {
@@ -43,5 +43,5 @@ void WindowManager::initSystems()
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
   std::printf("OPEN GL VERSION: %s", glGetString(GL_VERSION));
-  glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+  glClearColor(0.0f, 0.9f, 0.9f, 1.0f);
 }
